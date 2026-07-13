@@ -1,0 +1,38 @@
+﻿@model object
+@{ ViewData["Title"] = "QR Simülasyonu"; }
+
+<div class="page-header">
+    <h2><i class="bi bi-qr-code-scan"></i> QR Simülasyonu</h2>
+    <span class="badge bg-warning text-dark">Mobil uygulama simülasyonu</span>
+</div>
+
+<div class="card col-md-6">
+    <div class="card-body">
+        <p class="text-muted">
+            Kiosk ekranındaki QR'ın temsil ettiği token'ı buraya yapıştırıp
+            yapmak istediğiniz işlemi seçin. (Mobil uygulamada bu adım kamerayla
+            QR okutarak yapılır.)
+        </p>
+
+        <form asp-action="Process" method="post">
+            <div class="mb-3">
+                <label class="form-label">QR Token</label>
+                <input type="text" name="token" class="form-control" placeholder="Token'ı yapıştırın" required />
+            </div>
+            <div class="d-grid gap-2">
+                <button type="submit" name="action" value="CheckIn" class="btn btn-primary">
+                    <i class="bi bi-box-arrow-in-right"></i> Giriş Yap
+                </button>
+                <button type="submit" name="action" value="BreakStart" class="btn btn-outline-primary">
+                    <i class="bi bi-cup-hot"></i> Mola Ver
+                </button>
+                <button type="submit" name="action" value="BreakEnd" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-return-left"></i> Mola Bitir
+                </button>
+                <button type="submit" name="action" value="CheckOut" class="btn btn-secondary">
+                    <i class="bi bi-box-arrow-left"></i> Çıkış Yap
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

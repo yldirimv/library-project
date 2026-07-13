@@ -1,0 +1,41 @@
+﻿@model List<AppUser>
+@{ ViewData["Title"] = "Çalışanlar"; }
+
+<div class="page-header">
+    <h2><i class="bi bi-person-badge"></i> Çalışanlar</h2>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Yeni Çalışan</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr><th>Ad Soyad</th><th>E-posta</th><th></th></tr>
+    </thead>
+    <tbody>
+        @foreach (var emp in Model)
+        {
+            <tr>
+                <td>@emp.FullName</td>
+                <td>@emp.Email</td>
+                <td class="text-end">
+    @if (emp.LockoutEnd.HasValue && emp.LockoutEnd > DateTimeOffset.Now)
+    {
+        <span class="badge bg-secondary">Devre Dışı</span>
+    }
+    else
+    {
+        <a asp-action="Edit" asp-route-id="@emp.Id" class="btn btn-sm btn-outline-primary">Düzenle</a>
+        <form asp-action="Delete" asp-route-id="@emp.Id" method="post" class="d-inline"
+              data-confirm="@emp.FullName hesabı devre dışı bırakılsın mı?">
+            <button type="submit" class="btn btn-sm btn-outline-danger">Devre Dışı Bırak</button>
+        </form>
+    }
+</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <p class="text-muted text-center">Kayıtlı çalışan yok.</p>
+}

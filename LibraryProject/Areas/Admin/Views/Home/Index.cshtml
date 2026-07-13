@@ -1,0 +1,85 @@
+﻿@using LibraryProject.Model.Dtos
+@model AdminDashboardDto
+@{ ViewData["Title"] = "Ana Sayfa"; }
+
+<div class="page-header">
+    <h2><i class="bi bi-speedometer2"></i> Genel Durum</h2>
+    <span class="text-muted">@DateTime.Now.ToString("dd MMMM yyyy, HH:mm")</span>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <i class="bi bi-person-workspace stat-icon text-danger"></i>
+                <div class="stat-value">@Model.CurrentlyInside</div>
+                <div class="stat-label">Şu An Çalışıyor</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <i class="bi bi-cup-hot stat-icon text-primary"></i>
+                <div class="stat-value">@Model.OnBreak</div>
+                <div class="stat-label">Molada</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <i class="bi bi-calendar-check stat-icon" style="color:var(--primary-light)"></i>
+                <div class="stat-value">@Model.TodaysReservations</div>
+                <div class="stat-label">Bugünkü Rezervasyon</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <i class="bi bi-book stat-icon" style="color:var(--accent)"></i>
+                <div class="stat-value">@Model.ActiveLoans</div>
+                <div class="stat-label">Ödünçteki Kitap</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <i class="bi bi-exclamation-triangle stat-icon text-danger"></i>
+                <div class="stat-value">@Model.OverdueLoans</div>
+                <div class="stat-label">Gecikmiş Kitap</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <i class="bi bi-people stat-icon" style="color:var(--primary)"></i>
+                <div class="stat-value">@Model.TotalVisitors</div>
+                <div class="stat-label">Kayıtlı Ziyaretçi</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <i class="bi bi-gift stat-icon" style="color:var(--accent)"></i>
+                <div class="stat-value">@Model.PendingGiftRequests</div>
+                <div class="stat-label">Bekleyen Hediye Talebi</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <a asp-controller="LibraryStatus" asp-action="Index" class="text-decoration-none">
+                    <i class="bi bi-grid-3x3-gap stat-icon" style="color:var(--primary-light)"></i>
+                    <div class="stat-value"><i class="bi bi-arrow-right"></i></div>
+                    <div class="stat-label">Kütüphane Durumuna Git</div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

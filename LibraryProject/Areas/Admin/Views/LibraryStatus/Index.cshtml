@@ -1,0 +1,27 @@
+﻿@model List<Seat>
+@{ ViewData["Title"] = "Kütüphane Durum"; }
+
+<div class="page-header">
+    <h2><i class="bi bi-grid-3x3-gap"></i> Kütüphane Durum</h2>
+    <div class="btn-group">
+        <a asp-action="Index" asp-route-floor="1"
+           class="btn @((int)ViewData["Floor"] == 1 ? "btn-primary" : "btn-outline-secondary")">Kat 1</a>
+        <a asp-action="Index" asp-route-floor="2"
+           class="btn @((int)ViewData["Floor"] == 2 ? "btn-primary" : "btn-outline-secondary")">Kat 2</a>
+    </div>
+</div>
+
+<partial name="_SeatMap" model="Model" view-data="ViewData" />
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.0/dist/browser/signalr.min.js"></script>
+<script>
+    const seatConn = new signalR.HubConnectionBuilder()
+        .withUrl("/hubs/notification")
+        .withAutomaticReconnect()
+        .build();
+
+    seatConn.on("SeatChanged", () => location.reload());
+
+    seatConn.start().then(() => seatConn.invoke("JoinEmployeeGroup"));
+</script>
+}

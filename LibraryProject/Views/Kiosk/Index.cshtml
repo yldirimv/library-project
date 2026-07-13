@@ -1,0 +1,65 @@
+﻿@{ Layout = null; }
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>Kütüphane Giriş</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(160deg, var(--primary), var(--primary-light));
+            color: #fff;
+        }
+        .kiosk-title { font-size: 1.6rem; font-weight: 800; margin-bottom: .25rem; }
+        .kiosk-sub { opacity: .8; margin-bottom: 2rem; }
+        .qr-frame {
+            background: #fff;
+            padding: 24px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.35);
+        }
+        .qr-frame img { display: block; width: 320px; height: 320px; }
+        .kiosk-hint { margin-top: 2rem; display: flex; align-items: center; gap: .6rem; opacity: .85; }
+        .countdown-bar {
+            width: 320px; height: 6px;
+            background: rgba(255,255,255,.25);
+            border-radius: 3px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+        .countdown-bar .fill {
+            height: 100%;
+            background: var(--accent);
+            animation: shrink 5s linear infinite;
+        }
+        @@keyframes shrink { from { width: 100%; } to { width: 0; } }
+    </style>
+</head>
+<body>
+    <div class="kiosk-title"><i class="bi bi-book-half"></i> Kütüphane</div>
+    <div class="kiosk-sub">Uygulamadan işlem seçip QR kodu okutun</div>
+
+    <div class="qr-frame">
+        <img id="qrImg" src="/Kiosk/QrImage" alt="QR" />
+    </div>
+    <div class="countdown-bar"><div class="fill"></div></div>
+
+    <div class="kiosk-hint">
+        <i class="bi bi-phone"></i> Giriş Yap · Mola Ver · Mola Bitir · Çıkış Yap
+    </div>
+
+    <script>
+        setInterval(() => {
+            // cache kırıcı: her seferinde farklı URL, tarayıcı taze resim çeker
+            document.getElementById('qrImg').src = '/Kiosk/QrImage?t=' + Date.now();
+        }, 5000);
+    </script>
+</body>
+</html>

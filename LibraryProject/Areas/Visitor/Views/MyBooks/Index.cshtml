@@ -1,0 +1,37 @@
+﻿@model List<BookLoan>
+@{ ViewData["Title"] = "Kitaplarım"; }
+
+<div class="page-header">
+    <h2><i class="bi bi-journal-bookmark"></i> Kitaplarım</h2>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr><th>Kitap</th><th>Yazar</th><th>Alış</th><th>Son Teslim</th><th>Durum</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var loan in Model)
+        {
+            var overdue = loan.Status == LoanStatus.Active && DateTime.Now > loan.DueDate;
+            <tr>
+                <td><strong>@loan.Book.Title</strong></td>
+                <td>@loan.Book.Author</td>
+                <td>@loan.LoanDate.ToString("dd.MM.yyyy")</td>
+                <td class="@(overdue ? "text-danger fw-bold" : "")">@loan.DueDate.ToString("dd.MM.yyyy")</td>
+                <td>
+                    @if (loan.Status == LoanStatus.Returned)
+                    { <span class="badge bg-success">İade Edildi</span> }
+                    else if (overdue)
+                    { <span class="badge bg-danger">Gecikmiş!</span> }
+                    else
+                    { <span class="badge bg-primary">Üzerimde</span> }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <p class="text-muted text-center">Henüz ödünç aldığınız kitap yok.</p>
+}

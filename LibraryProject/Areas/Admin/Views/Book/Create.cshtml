@@ -1,0 +1,28 @@
+﻿@model Book
+@{ ViewData["Title"] = "Yeni Kitap"; }
+
+<h2>Yeni Kitap</h2>
+
+<form asp-action="Create" method="post" class="col-md-6">
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label">Kitap Adı</label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Author" class="form-label">Yazar</label>
+        <input asp-for="Author" class="form-control" />
+        <span asp-validation-for="Author" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="ISBN" class="form-label">ISBN</label>
+        <input asp-for="ISBN" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="TotalStock" class="form-label">Toplam Stok</label>
+        <input asp-for="TotalStock" class="form-control" type="number" min="0" />
+        <span asp-validation-for="TotalStock" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+</form>

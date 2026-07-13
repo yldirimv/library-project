@@ -1,0 +1,75 @@
+﻿@model List<Gift>
+@{
+    ViewData["Title"] = "Sadakat Sistemi";
+    var requests = (List<GiftRequest>)ViewBag.PendingRequests;
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-gift"></i> Sadakat Sistemi</h2>
+    <a asp-action="CreateGift" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Yeni Hediye</a>
+</div>
+
+<h5 class="fw-bold mb-3"><i class="bi bi-hourglass-split"></i> Bekleyen Talepler</h5>
+
+@if (requests.Any())
+{
+    <table class="table table-striped mb-4">
+        <thead>
+            <tr><th>Ziyaretçi</th><th>Hediye</th><th>Gereken Puan</th><th>Talep Tarihi</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach (var req in requests)
+            {
+                <tr>
+                    <td>@req.Visitor.FullName</td>
+                    <td>@req.Gift.Name</td>
+                    <td>@req.Gift.RequiredPoints</td>
+                    <td>@req.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td class="text-end">
+                        <form asp-action="Approve" asp-route-id="@req.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-success">
+                                <i class="bi bi-check-lg"></i> Onayla
+                            </button>
+                        </form>
+                        <form asp-action="Reject" asp-route-id="@req.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-x-lg"></i> Reddet
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-muted mb-4">Bekleyen talep yok.</p>
+}
+
+<h5 class="fw-bold mb-3"><i class="bi bi-box-seam"></i> Hediyeler</h5>
+
+<table class="table table-striped">
+    <thead>
+        <tr><th>Hediye</th><th>Gereken Puan</th><th>Stok</th><th></th></tr>
+    </thead>
+    <tbody>
+        @foreach (var gift in Model)
+        {
+            <tr>
+                <td>@gift.Name</td>
+                <td><span class="badge bg-success">@gift.RequiredPoints puan</span></td>
+                <td>
+                    <span class="badge @(gift.Stock > 0 ? "bg-success" : "bg-danger")">@gift.Stock</span>
+                </td>
+                <td class="text-end">
+                    <a asp-action="EditGift" asp-route-id="@gift.Id" class="btn btn-sm btn-outline-primary">Düzenle</a>
+                    <form asp-action="DeleteGift" asp-route-id="@gift.Id" method="post" class="d-inline"
+                          data-confirm="@gift.Name silinsin mi?">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

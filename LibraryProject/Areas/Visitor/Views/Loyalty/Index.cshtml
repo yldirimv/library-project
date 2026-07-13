@@ -1,0 +1,93 @@
+﻿@model List<LoyaltyTransaction>
+@{
+    ViewData["Title"] = "Sadakat Sistemi";
+    var balance = (int)ViewBag.Balance;
+    var gifts = (List<Gift>)ViewBag.Gifts;
+    var myRequests = (List<GiftRequest>)ViewBag.MyRequests;
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-gift"></i> Sadakat Sistemi</h2>
+    <div class="card px-4 py-2">
+        <span class="text-muted small">Puanım</span>
+        <span class="fs-3 fw-bold" style="color:var(--accent)">@balance</span>
+    </div>
+</div>
+
+<h5 class="fw-bold mb-3"><i class="bi bi-box-seam"></i> Hediyeler</h5>
+<div class="row g-3 mb-4">
+    @foreach (var gift in gifts)
+    {
+        var canAfford = balance >= gift.RequiredPoints && gift.Stock > 0;
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-gift-fill fs-1" style="color:var(--accent)"></i>
+                    <h6 class="fw-bold mt-2 mb-1">@gift.Name</h6>
+                    <span class="badge bg-success mb-2">@gift.RequiredPoints puan</span>
+                    @if (gift.Stock <= 0)
+                    {
+                        <div><span class="badge bg-danger">Stok Tükendi</span></div>
+                    }
+                    else
+                    {
+                        <form asp-action="Request" method="post">
+                            <input type="hidden" name="giftId" value="@gift.Id" />
+                            <button type="submit" class="btn btn-sm @(canAfford ? "btn-primary" : "btn-outline-secondary")"
+                                    @(canAfford ? "" : "disabled")>
+                                @(canAfford ? "Talep Et" : "Yetersiz Puan")
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <h5 class="fw-bold mb-3"><i class="bi bi-clock-history"></i> Puan Hareketlerim</h5>
+        <table class="table table-striped">
+            <thead><tr><th>Açıklama</th><th>Tarih</th><th class="text-end">Puan</th></tr></thead>
+            <tbody>
+                @foreach (var t in Model)
+                {
+                    <tr>
+                        <td>@t.Description</td>
+                        <td>@t.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td class="text-end fw-bold @(t.Points >= 0 ? "text-success" : "text-danger")">
+                            @(t.Points >= 0 ? "+" : "")@t.Points
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (!Model.Any()) { <p class="text-muted">Henüz puan hareketiniz yok.</p> }
+    </div>
+
+    <div class="col-md-6">
+        <h5 class="fw-bold mb-3"><i class="bi bi-hourglass-split"></i> Taleplerim</h5>
+        <table class="table table-striped">
+            <thead><tr><th>Hediye</th><th>Tarih</th><th>Durum</th></tr></thead>
+            <tbody>
+                @foreach (var req in myRequests)
+                {
+                    <tr>
+                        <td>@req.Gift.Name</td>
+                        <td>@req.CreatedDate.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            @switch (req.Status)
+                            {
+                                case GiftRequestStatus.Pending:  <span class="badge bg-secondary">Bekliyor</span> break;
+                                case GiftRequestStatus.Approved: <span class="badge bg-success">Onaylandı</span> break;
+                                case GiftRequestStatus.Rejected: <span class="badge bg-danger">Reddedildi</span> break;
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (!myRequests.Any()) { <p class="text-muted">Henüz talebiniz yok.</p> }
+    </div>
+</div>

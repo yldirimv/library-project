@@ -1,0 +1,113 @@
+﻿@model List<Seat>
+@{
+    ViewData["Title"] = "Rezervasyon Yap";
+    var floor = (int)ViewData["Floor"];
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-calendar-plus"></i> Rezervasyon Yap</h2>
+    <div class="btn-group">
+        <a asp-action="Index" asp-route-floor="1"
+           class="btn @(floor == 1 ? "btn-primary" : "btn-outline-secondary")">Kat 1</a>
+        <a asp-action="Index" asp-route-floor="2"
+           class="btn @(floor == 2 ? "btn-primary" : "btn-outline-secondary")">Kat 2</a>
+    </div>
+</div>
+
+<!-- Adım 1: zaman aralığı -->
+<div class="card mb-3">
+    <div class="card-body d-flex flex-wrap gap-3 align-items-end">
+        <div>
+            <label class="form-label">Tarih</label>
+            <input type="date" id="resDate" class="form-control" />
+        </div>
+        <div>
+            <label class="form-label">Başlangıç</label>
+            <input type="time" id="resStart" class="form-control" />
+        </div>
+        <div>
+            <label class="form-label">Bitiş</label>
+            <input type="time" id="resEnd" class="form-control" />
+        </div>
+        <button type="button" id="btnCheck" class="btn btn-primary">
+            <i class="bi bi-search"></i> Müsaitliği Göster
+        </button>
+        <span id="checkHint" class="text-muted small">Önce tarih ve saat aralığı seçin.</span>
+    </div>
+</div>
+
+<!-- Adım 2: kroki -->
+<partial name="_SeatMap" model="Model" view-data="ViewData" />
+
+<!-- Adım 3: onay formu (koltuk seçilince görünür) -->
+<form id="confirmForm" asp-action="Create" method="post" class="card mt-3" style="display:none;">
+    @Html.AntiForgeryToken()
+    <div class="card-body d-flex align-items-center gap-3">
+        <span>Seçilen koltuk: <strong id="selectedLabel"></strong></span>
+        <input type="hidden" name="seatId" id="seatId" />
+        <input type="hidden" name="start" id="startHidden" />
+        <input type="hidden" name="end" id="endHidden" />
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg"></i> Rezervasyonu Onayla
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    const btnCheck = document.getElementById('btnCheck');
+    const hint = document.getElementById('checkHint');
+    const form = document.getElementById('confirmForm');
+    let checked = false; // müsaitlik gösterilmeden koltuk seçilemesin
+
+    function getRange() {
+        const d = document.getElementById('resDate').value;
+        const s = document.getElementById('resStart').value;
+        const e = document.getElementById('resEnd').value;
+        if (!d || !s || !e) return null;
+        return { start: `${d}T${s}`, end: `${d}T${e}` };
+    }
+
+    btnCheck.addEventListener('click', async () => {
+        const range = getRange();
+        if (!range) { hint.textContent = 'Tarih ve saatleri doldurun.'; return; }
+
+        const res = await fetch(`/Visitor/Reservation/Occupied?start=${range.start}&end=${range.end}`);
+        const occupiedIds = await res.json();
+
+        // Önce hepsini boşa çek, sonra doluları boya
+        document.querySelectorAll('.seat').forEach(seat => {
+            seat.classList.remove('reserved', 'occupied', 'selected');
+            seat.classList.add('free');
+            if (occupiedIds.includes(parseInt(seat.dataset.seatId)))
+            {
+                seat.classList.remove('free');
+                seat.classList.add('reserved');
+            }
+        });
+
+        checked = true;
+        form.style.display = 'none';
+        hint.textContent = 'Yeşil koltuklardan birini seçin.';
+    });
+
+    // Koltuk tıklama (event delegation: tek dinleyici, tüm koltuklar)
+    document.querySelector('.seat-map').addEventListener('click', (e) => {
+        const seat = e.target.closest('.seat');
+        if (!seat) return;
+        if (!checked) { hint.textContent = 'Önce müsaitliği gösterin.'; return; }
+        if (!seat.classList.contains('free')) return; // dolu koltuk seçilemez
+
+        document.querySelectorAll('.seat.selected').forEach(s => s.classList.remove('selected'));
+        seat.classList.add('selected');
+
+        const range = getRange();
+        document.getElementById('seatId').value = seat.dataset.seatId;
+        document.getElementById('startHidden').value = range.start;
+        document.getElementById('endHidden').value = range.end;
+        document.getElementById('selectedLabel').textContent = seat.dataset.seatNumber;
+        form.style.display = 'block';
+        form.scrollIntoView({ behavior: 'smooth' });
+    });
+</script>
+}

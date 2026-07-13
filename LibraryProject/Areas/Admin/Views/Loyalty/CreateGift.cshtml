@@ -1,0 +1,30 @@
+﻿@model Gift
+@{ ViewData["Title"] = "Yeni Hediye"; }
+
+<div class="page-header">
+    <h2><i class="bi bi-gift"></i> Yeni Hediye</h2>
+</div>
+
+<div class="card col-md-6">
+    <div class="card-body">
+        <form asp-action="CreateGift" method="post">
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Hediye Adı</label>
+                <input asp-for="Name" class="form-control" placeholder="Örn: Kahve Kuponu" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="RequiredPoints" class="form-label">Gereken Puan</label>
+                <input asp-for="RequiredPoints" class="form-control" type="number" min="1" />
+                <span asp-validation-for="RequiredPoints" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Stock" class="form-label">Stok</label>
+                <input asp-for="Stock" class="form-control" type="number" min="0" />
+                <span asp-validation-for="Stock" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Kaydet</button>
+            <a asp-action="Index" class="btn btn-secondary">İptal</a>
+        </form>
+    </div>
+</div>

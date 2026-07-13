@@ -1,0 +1,74 @@
+﻿@model List<Seat>
+@{
+    ViewData["Title"] = "Rezervasyon Takip";
+    var floor = (int)ViewData["Floor"];
+    var reservations = (List<Reservation>)ViewBag.TodaysReservations;
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-calendar-check"></i> Rezervasyon Takip</h2>
+    <div class="btn-group">
+        <a asp-action="Index" asp-route-floor="1"
+           class="btn @(floor == 1 ? "btn-primary" : "btn-outline-secondary")">Kat 1</a>
+        <a asp-action="Index" asp-route-floor="2"
+           class="btn @(floor == 2 ? "btn-primary" : "btn-outline-secondary")">Kat 2</a>
+    </div>
+</div>
+
+<partial name="_SeatMap" model="Model" view-data="ViewData" />
+
+<h5 class="fw-bold mt-4 mb-3"><i class="bi bi-list-check"></i> Bugünün Rezervasyonları</h5>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Ziyaretçi</th><th>Koltuk</th><th>Saat</th>
+            <th>Durum</th><th>Giriş</th><th>Çıkış</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var res in reservations)
+        {
+            var checkIn = res.Events?.Where(e => e.EventType == ReservationEventType.CheckIn)
+                                     .OrderBy(e => e.EventTime).FirstOrDefault();
+            var checkOut = res.Events?.Where(e => e.EventType == ReservationEventType.CheckOut)
+                                      .OrderBy(e => e.EventTime).LastOrDefault();
+            <tr>
+                <td>@res.Visitor.FullName</td>
+                <td><strong>@res.Seat.SeatNumber</strong></td>
+                <td>@res.StartTime.ToString("HH:mm") - @res.EndTime.ToString("HH:mm")</td>
+                <td>
+                    @switch (res.Status)
+                    {
+                        case ReservationStatus.Pending:   <span class="badge bg-secondary">Bekliyor</span> break;
+                        case ReservationStatus.Active:    <span class="badge bg-danger">İçeride</span> break;
+                        case ReservationStatus.OnBreak:   <span class="badge bg-primary">Molada</span> break;
+                        case ReservationStatus.Completed: <span class="badge bg-success">Tamamlandı</span> break;
+                        case ReservationStatus.Cancelled: <span class="badge bg-light text-dark">İptal</span> break;
+                        case ReservationStatus.NoShow:    <span class="badge bg-warning text-dark">Gelmedi</span> break;
+                    }
+                </td>
+                <td>@(checkIn?.EventTime.ToString("HH:mm") ?? "-")</td>
+                <td>@(checkOut?.EventTime.ToString("HH:mm") ?? "-")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!reservations.Any())
+{
+    <p class="text-muted text-center">Bugün rezervasyon yok.</p>
+}
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.0/dist/browser/signalr.min.js"></script>
+<script>
+    const seatConn = new signalR.HubConnectionBuilder()
+        .withUrl("/hubs/notification")
+        .withAutomaticReconnect()
+        .build();
+
+    seatConn.on("SeatChanged", () => location.reload());
+
+    seatConn.start().then(() => seatConn.invoke("JoinEmployeeGroup"));
+</script>
+}

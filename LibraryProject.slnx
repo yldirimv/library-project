@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="LibraryProject.Api/LibraryProject.Api.csproj" Id="8629a29b-4eb1-47c5-a806-eb4e49aed49d" />
+  <Project Path="LibraryProject.Business/LibraryProject.Business.csproj" />
+  <Project Path="LibraryProject.Data/LibraryProject.Data.csproj" />
+  <Project Path="LibraryProject.Model/LibraryProject.Model.csproj" />
+  <Project Path="LibraryProject/LibraryProject.csproj" />
+</Solution>

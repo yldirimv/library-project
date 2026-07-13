@@ -1,0 +1,54 @@
+﻿@model List<AppUser>
+@{ ViewData["Title"] = "Ziyaretçiler"; }
+
+<div class="page-header">
+    <h2><i class="bi bi-people"></i> Ziyaretçiler</h2>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Yeni Ziyaretçi</a>
+</div>
+
+<form method="get" class="mb-3 col-md-4">
+    <div class="input-group">
+        <input type="text" name="search" value="@ViewBag.Search"
+               class="form-control" placeholder="Ada göre ara..." />
+        <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-search"></i></button>
+        @if (!string.IsNullOrEmpty(ViewBag.Search as string))
+        {
+            <a asp-action="Index" class="btn btn-outline-danger"><i class="bi bi-x-lg"></i></a>
+        }
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr><th>Ad Soyad</th><th>TC Kimlik No</th><th>E-posta</th><th></th></tr>
+    </thead>
+    <tbody>
+        @foreach (var visitor in Model)
+        {
+            <tr>
+                <td>@visitor.FullName</td>
+                <td>@visitor.IdentityNumber</td>
+                <td>@visitor.Email</td>
+                <td class="text-end">
+    @if (visitor.LockoutEnd.HasValue && visitor.LockoutEnd > DateTimeOffset.Now)
+    {
+        <span class="badge bg-secondary">Devre Dışı</span>
+    }
+    else
+    {
+        <a asp-action="Edit" asp-route-id="@visitor.Id" class="btn btn-sm btn-outline-primary">Düzenle</a>
+        <form asp-action="Delete" asp-route-id="@visitor.Id" method="post" class="d-inline"
+              data-confirm="@visitor.FullName hesabı devre dışı bırakılsın mı?">
+            <button type="submit" class="btn btn-sm btn-outline-danger">Devre Dışı Bırak</button>
+        </form>
+    }
+</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <p class="text-muted text-center">Ziyaretçi bulunamadı.</p>
+}

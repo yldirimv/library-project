@@ -1,0 +1,30 @@
+﻿@model object
+@{ ViewData["Title"] = "Ödünç Ver"; }
+
+<div class="page-header">
+    <h2><i class="bi bi-box-arrow-up"></i> Ödünç Ver</h2>
+</div>
+
+<div class="card col-md-6">
+    <div class="card-body">
+        <form asp-action="Lend" method="post">
+            <div class="mb-3">
+                <label class="form-label">Ziyaretçi TC Kimlik No</label>
+                <input type="text" name="visitorTc" class="form-control" maxlength="11" required
+                       placeholder="11 haneli TC" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Kitap</label>
+                <select name="bookId" class="form-select" required>
+                    <option value="">Kitap seçin...</option>
+                    @foreach (var book in (List<Book>)ViewBag.Books)
+                    {
+                        <option value="@book.Id">@book.Title — @book.Author</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Ödünç Ver</button>
+            <a asp-action="Index" class="btn btn-secondary">İptal</a>
+        </form>
+    </div>
+</div>

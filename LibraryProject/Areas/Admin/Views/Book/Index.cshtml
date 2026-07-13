@@ -1,0 +1,65 @@
+﻿@model List<Book>
+@{
+    ViewData["Title"] = "Kitap Yönetimi";
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-book"></i> Kitap Yönetimi</h2>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Yeni Kitap</a>
+</div>
+
+
+
+<form method="get" class="mb-3 col-md-4">
+    <div class="input-group">
+        <input type="text" name="search" value="@ViewBag.Search"
+               class="form-control" placeholder="Kitap adına göre ara..." />
+        <button type="submit" class="btn btn-outline-secondary">Ara</button>
+        @if (!string.IsNullOrEmpty(ViewBag.Search as string))
+        {
+            <a asp-action="Index" class="btn btn-outline-danger">Temizle</a>
+        }
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Kitap Adı</th>
+            <th>Yazar</th>
+            <th>ISBN</th>
+            <th>Toplam Stok</th>
+            <th>Müsait</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in Model)
+        {
+            var available = ((Dictionary<int, int>)ViewBag.AvailableStock)[book.Id];
+            <tr>
+                <td>@book.Title</td>
+                <td>@book.Author</td>
+                <td>@book.ISBN</td>
+                <td>@book.TotalStock</td>
+                <td>
+                    <span class="badge @(available > 0 ? "bg-success" : "bg-danger")">
+                        @available
+                    </span>
+                </td>
+                <td class="text-end">
+                    <a asp-action="Edit" asp-route-id="@book.Id" class="btn btn-sm btn-outline-primary">Düzenle</a>
+                    <form asp-action="Delete" asp-route-id="@book.Id" method="post" class="d-inline"
+                          data-confirm="@book.Title kitabı silinsin mi?">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <p class="text-muted text-center">Kitap bulunamadı.</p>
+}

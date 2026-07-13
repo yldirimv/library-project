@@ -1,0 +1,55 @@
+﻿@model List<BookLoan>
+@{ ViewData["Title"] = "Kitap Ödünç"; }
+
+<div class="page-header">
+    <h2><i class="bi bi-arrow-left-right"></i> Kitap Ödünç</h2>
+    <a asp-action="Lend" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Ödünç Ver</a>
+</div>
+
+<form method="get" class="mb-3 col-md-4">
+    <div class="input-group">
+        <input type="text" name="search" value="@ViewBag.Search"
+               class="form-control" placeholder="Ziyaretçi veya kitap ara..." />
+        <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-search"></i></button>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Kitap</th><th>Ziyaretçi</th><th>Veriliş</th>
+            <th>Son Teslim</th><th>Durum</th><th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var loan in Model)
+        {
+            var overdue = DateTime.Now > loan.DueDate;
+            <tr>
+                <td><strong>@loan.Book.Title</strong></td>
+                <td>@loan.Visitor.FullName</td>
+                <td>@loan.LoanDate.ToString("dd.MM.yyyy")</td>
+                <td class="@(overdue ? "text-danger fw-bold" : "")">
+                    @loan.DueDate.ToString("dd.MM.yyyy")
+                </td>
+                <td>
+                    @if (overdue) { <span class="badge bg-danger">Gecikmiş</span> }
+                    else { <span class="badge bg-success">Zamanında</span> }
+                </td>
+                <td class="text-end">
+                    <form asp-action="Return" asp-route-id="@loan.Id" method="post" class="d-inline"
+                          data-confirm="Kitap iade alınsın mı?">
+                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-box-arrow-in-down"></i> İade Al
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <p class="text-muted text-center">Aktif ödünç yok.</p>
+}
